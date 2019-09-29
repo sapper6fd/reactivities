@@ -13,9 +13,9 @@ const ActivityDetails: React.FC<IProps> = ({ activity, setEditMode, setSelectedA
     <Card fluid>
       <Image src={`/assets/categoryImages/${activity.category}.jpg`} wrapped ui={false}/>
       <Card.Content>
-        <Card.Header>{activity.title}}</Card.Header>
+        <Card.Header>{activity.title}</Card.Header>
         <Card.Meta>
-          <span>{activity.date}}</span>
+          <span>{activity.date}</span>
         </Card.Meta>
         <Card.Description>{activity.description}</Card.Description>
       </Card.Content>
