@@ -13,7 +13,7 @@ const ActivityListItem: React.FC<{ activity: IActivity }> = ({ activity }) => {
             <Item.Image size="tiny" circular src="/assets/user.png" />
             <Item.Content>
               <Item.Header as="a">{activity.title}</Item.Header>
-              <Item.Description>Hostes by Justin!</Item.Description>
+              <Item.Description>Hosted by Justin!</Item.Description>
             </Item.Content>
           </Item>
         </Item.Group>
