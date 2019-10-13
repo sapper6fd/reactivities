@@ -4,7 +4,7 @@ import { Message } from "semantic-ui-react";
 
 interface IProps {
   error: AxiosResponse;
-  text: string;
+  text?: string;
 }
 
 const ErrorMessage: React.FC<IProps> = ({ error, text }) => {

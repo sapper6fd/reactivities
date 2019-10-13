@@ -4,7 +4,6 @@ import {
   ActivityFormValues
 } from "../../../../app/models/activity";
 import { v4 as uuid } from "uuid";
-import ActivityStore from "../../../../app/stores/activityStore";
 import { observer } from "mobx-react-lite";
 import { RouteComponentProps } from "react-router";
 import { Form as FinalForm, Field } from "react-final-form";
