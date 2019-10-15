@@ -1,24 +1,24 @@
 using System;
 using System.Linq;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+using Application.Errors;
 using Application.Interfaces;
-using Domain;
 using MediatR;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Persistence;
 
 namespace Application.Photos
 {
-    public class Add
+    public class Delete
     {
-        public class Command : IRequest<Photo>
+        public class Command : IRequest
         {
-            public IFormFile File { get; set; }
+            public string Id { get; set; }
         }
 
-        public class Handler : IRequestHandler<Command, Photo>
+        public class Handler : IRequestHandler<Command>
         {
             private readonly DataContext _context;
             private readonly IUserAccessor _userAccessor;
@@ -30,26 +30,29 @@ namespace Application.Photos
                 _context = context;
             }
 
-            public async Task<Photo> Handle(Command request, CancellationToken cancellationToken)
+            public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
             {
-                var photoUploadResult = _photoAccessor.AddPhoto(request.File);
 
                 var user = await _context.Users.SingleOrDefaultAsync(x => x.UserName == _userAccessor.GetCurrentUsername());
 
-                var photo = new Photo
-                {
-                    Url = photoUploadResult.Url,
-                    Id = photoUploadResult.PublicId
-                };
+                var photo = user.Photos.FirstOrDefault(x => x.Id == request.Id);
 
-                if (!user.Photos.Any(x => x.IsMain))
-                    photo.IsMain = true;
+                if (photo == null)
+                    throw new RestException(HttpStatusCode.NotFound, new {Photo = "Not found"});
 
-                user.Photos.Add(photo);           
+                if (photo.IsMain)
+                    throw new RestException(HttpStatusCode.BadRequest, new {Photo = "You cannot delete your main photo"});
+
+                var result = _photoAccessor.DeletePhoto(photo.Id);
+
+                if (result == null)
+                    throw new Exception("Problem deleting the photo");
+
+                user.Photos.Remove(photo);
 
                 var success = await _context.SaveChangesAsync() > 0;
 
-                if (success) return photo;
+                if (success) return Unit.Value;
 
                 throw new Exception("Problem saving changes");
             }
