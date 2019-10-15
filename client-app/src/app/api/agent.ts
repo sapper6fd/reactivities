@@ -12,13 +12,14 @@ axios.interceptors.request.use((config) => {
     return config
 }, error => {
     return Promise.reject(error)
-;})
+        ;
+})
 
 axios.interceptors.response.use(undefined, error => {
     if (error.message === 'Network Error' && !error.response) {
         toast.error('Network Error - Make sure API is running!')
     }
-    const {status, data, config} = error.response;
+    const { status, data, config } = error.response;
     if (status === 404) {
         history.push('/notfound');
     }
@@ -34,7 +35,7 @@ axios.interceptors.response.use(undefined, error => {
 const responseBody = (response: AxiosResponse) => response.data;
 
 const sleep = (ms: number) => (response: AxiosResponse) =>
-new Promise<AxiosResponse>(resolve => setTimeout(() => resolve(response), ms));
+    new Promise<AxiosResponse>(resolve => setTimeout(() => resolve(response), ms));
 
 const requests = {
     get: (url: string) => axios.get(url).then(sleep(1000)).then(responseBody),
@@ -54,7 +55,9 @@ const Activities = {
     details: (id: string) => requests.get(`/activities/${id}`),
     create: (activity: IActivity) => requests.post('/activities', activity),
     update: (activity: IActivity) => requests.put(`/activities/${activity.id}`, activity),
-    delete: (id: string) => requests.del(`/activities/${id}`)
+    delete: (id: string) => requests.del(`/activities/${id}`),
+    attend: (id: string) => requests.post(`/activities/${id}/attend`, {}),
+    unattend: (id: string) => requests.del(`/activities/${id}/attend`)
 }
 
 export default {
