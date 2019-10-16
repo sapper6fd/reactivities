@@ -7,7 +7,7 @@ import { toast } from 'react-toastify';
 export default class ProfileStore {
     rootStore: RootStore
     constructor(rootStore: RootStore) {
-        this.rootStore = rootStore
+        this.rootStore = rootStore;
     }
 
     @observable profile: IProfile | null = null;
@@ -17,7 +17,7 @@ export default class ProfileStore {
 
     @computed get isCurrentUser() {
         if (this.rootStore.userStore.user && this.profile) {
-            return this.rootStore.userStore.user.username === this.profile.username;
+            return this.rootStore.userStore.user.username === this.profile.username
         } else {
             return false;
         }
@@ -90,10 +90,24 @@ export default class ProfileStore {
                 this.loading = false;
             })
         } catch (error) {
-            toast.error('Problem deleting the photo')
+            toast.error('Problem deleting the photo');
             runInAction(() => {
                 this.loading = false;
             })
+        }
+    }
+
+    @action updateProfile = async (profile: Partial<IProfile>) => {
+        try {
+            await agent.Profiles.updateProfile(profile);
+            runInAction(() => {
+                if (profile.displayName !== this.rootStore.userStore.user!.displayName) {
+                    this.rootStore.userStore.user!.displayName = profile.displayName!;
+                }
+                this.profile = {...this.profile!, ...profile}
+            })
+        } catch (error) {
+            toast.error('Problem updating profile')
         }
     }
 }
